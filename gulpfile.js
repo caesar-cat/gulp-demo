@@ -45,6 +45,10 @@ gulp.task('stylus', function() {
         .pipe(gulp.dest('./src/css/'))
 })
 
+gulp.task('watch', function() {
+    gulp.watch('./src/stylus/*.styl', ['stylus']);
+})
+
 /**
  * css文件压缩
  */
@@ -146,21 +150,14 @@ gulp.task('rev-collector-spriter', function() {
 
 // 静态服务器
 gulp.task('bs', function() {
+    gulp.start('watch');  
     browserSync.init({
         files: "**", //监听整个项目
         server: {
-            baseDir: "./src/"
+            baseDir: "./src/view"
         }
     });
 });
-
-// 代理
-gulp.task('bsp', function() {
-    browserSync.init({
-        proxy: "你的域名或IP"
-    });
-});
-
 
 //构建
 gulp.task('build', gulpSequence(
