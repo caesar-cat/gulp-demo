@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var del = require('del');
 var rev = require('gulp-rev');
 var cssmin = require('gulp-clean-css');
-var stylus = require('gulp-stylus');
+var less = require('gulp-less');
 var uglify = require('gulp-uglify');
 var useref = require('gulp-useref');
 var imagemin = require('gulp-imagemin');
@@ -18,49 +18,41 @@ gulp.task('del', function() {
     return del(['dist', 'tmp']);
 });
 
-/**
- *  处理html模板中的引用文件
- **/
+//处理html模板中的引用文件
 gulp.task('useref', function() {
     return gulp.src('./src/view/*.html')
         .pipe(useref())
         .pipe(gulp.dest('./tmp/useref/view/'));
 });
 
-/**
- *  图片压缩
- */
+
+//图片压缩
 gulp.task('useref-img', function() {
     return gulp.src('./src/img/**/*')
         .pipe(imagemin())
         .pipe(gulp.dest('./dist/img/'));
 });
 
-/**
- * stylus编译
- */
-gulp.task('stylus', function() {
-    return gulp.src('./src/stylus/**/*')
-        .pipe(stylus())
+//less编译
+gulp.task('less', function() {
+    return gulp.src('./src/less/**/*')
+        .pipe(less())
         .pipe(gulp.dest('./src/css/'))
 })
 
+//监听less编译
 gulp.task('watch', function() {
-    gulp.watch('./src/stylus/*.styl', ['stylus']);
+    gulp.watch('./src/less/*.less', ['less']);
 })
 
-/**
- * css文件压缩
- */
+//css文件压缩
 gulp.task('min-css', function() {
     return gulp.src('./src/css/*.css')
         .pipe(cssmin({compatibility: 'ie8'}))
         .pipe(gulp.dest('./tmp/useref/css/'));
 });
 
-/**
- * 生成雪碧图
- */
+//生成雪碧图
 gulp.task('sprite', function() {
     return gulp.src('./src/css/*.css')
         .pipe(spriter({
@@ -71,9 +63,7 @@ gulp.task('sprite', function() {
 });
 
 
-/*
- * css加版本号
- */
+//css加版本号
 gulp.task('rev-css', function() {
     return gulp.src('./tmp/useref/css/*.css')
         .pipe(rev())
@@ -85,9 +75,7 @@ gulp.task('rev-css', function() {
         .pipe(gulp.dest('./tmp/rev/css/'));
 });
 
-/*
- * js加版本号
- */
+//js加版本号
 gulp.task('rev-js', function() {
     return gulp.src(['./src/js/*.js'])
         .pipe(rev())
@@ -97,9 +85,7 @@ gulp.task('rev-js', function() {
         .pipe(gulp.dest('./tmp/rev/js/'));
 });
 
-/**
- * 雪碧图加版本号 
-*/
+//雪碧图加版本号 
 gulp.task('rev-spriter-img', function() {
     return gulp.src(['./tmp/img/spritesheet.png'])
     .pipe(rev())
@@ -108,9 +94,7 @@ gulp.task('rev-spriter-img', function() {
     .pipe(gulp.dest('./tmp/rev/img/'));
 })
 
-/*
- * 分析resource-map, 分配资源到HTML
- */
+//分析resource-map, 分配资源到HTML start
 gulp.task('build-css', function() {
     return gulp.src(['./tmp/rev/css/*.css'])
         .pipe(gulp.dest('./dist/css/'));
@@ -146,6 +130,7 @@ gulp.task('rev-collector-spriter', function() {
         .pipe(revCollector())
         .pipe(gulp.dest('./dist/css/'))
 })
+//分析resource-map, 分配资源到HTML end
 
 
 // 静态服务器
@@ -162,7 +147,7 @@ gulp.task('bs', function() {
 //构建
 gulp.task('build', gulpSequence(
     'del', ['useref', 'useref-img'],
-    'stylus', 'min-css', 'sprite', ['rev-js', 'rev-css', 'rev-spriter-img'], ['rev-collector-html', 'rev-collector-spriter'], ['build-css'], ['build-js'], ['build-img']
+    'less', 'min-css', 'sprite', ['rev-js', 'rev-css', 'rev-spriter-img'], ['rev-collector-html', 'rev-collector-spriter'], ['build-css'], ['build-js'], ['build-img']
 ));
 
 gulp.task('default', ['bs'], function() {
