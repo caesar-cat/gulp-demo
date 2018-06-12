@@ -19,12 +19,12 @@ const baseConfig = {
     buildPath: './public/dist',
     srcPath: './public/src',
     tmpPath: './tmp',
-    viewsPath: './views'
+    viewsPath: './views_production'
 }
 
 //删除任务
 gulp.task('del', function() {
-    return del(['public/css', 'public/js', 'public/img', 'tmp', 'views']);
+    return del([`${baseConfig.buildPath}/css`, `${baseConfig.buildPath}/js`, `${baseConfig.buildPath}/img`, 'tmp']);
 });
 
 //处理html模板中的引用文件
@@ -52,9 +52,16 @@ gulp.task('less', function() {
         .pipe(gulp.dest(`${baseConfig.srcPath}/css/`))
 })
 
+//css文件压缩
+gulp.task('min-css', function() {
+    return gulp.src(`${baseConfig.srcPath}/css/*.css`)
+        .pipe(cssmin({compatibility: 'ie8'}))
+        .pipe(gulp.dest(`${baseConfig.tmpPath}/useref/css/`));
+});
+
 //生成雪碧图
 gulp.task('sprite', function() {
-    return gulp.src('./src/css/*.css')
+    return gulp.src(`${baseConfig.srcPath}/css/*.css`)
         .pipe(spriter({
             'spriteSheet': `${baseConfig.srcPath}/img/spritesheet.png`,
             'pathToSpriteSheetFromCSS': '../img/spritesheet.png',
@@ -71,7 +78,7 @@ gulp.task('rev-css', function() {
     return gulp.src(`${baseConfig.tmpPath}/useref/css/*.css`)
         .pipe(rev())
         .pipe(uncss({
-            html: [`${baseConfig.tmpPath}/**/*.html`],
+            html: [`${baseConfig.viewsPath}/*.html`],
         })).pipe(cssmin({compatibility: 'ie8'}))
         .pipe(gulp.dest(`${baseConfig.tmpPath}/rev/css/`))
         .pipe(rev.manifest())
@@ -99,7 +106,6 @@ gulp.task('build-js', function() {
         .pipe(gulp.dest(`${baseConfig.buildPath}/js/`));
 });
 
-//将src
 gulp.task('build-img', function() {
     return gulp.src([`${baseConfig.srcPath}/img/*`])
         .pipe(gulp.dest(`${baseConfig.buildPath}/img/`))
@@ -110,8 +116,8 @@ gulp.task('rev-collector-html', function() {
         .pipe(revCollector({
             replaceReved: true,
             dirReplacements: {
-                '/src/css': '/css',
-                '/src/js': '/js',
+                '/css': '/dist/css',
+                '/js': '/dist/js',
             }
         }))
         .pipe(htmlmin({
@@ -138,10 +144,13 @@ gulp.task('bs', function() {
 //生产构建
 gulp.task('build', gulpSequence(
     'del', ['useref', 'useref-img'],
-    'less', 'sprite', ['rev-js', 'rev-css'], ['rev-collector-html'], ['build-css'], ['build-js'], ['build-img']
+    'less', 'min-css', 'sprite', ['rev-js', 'rev-css'], ['rev-collector-html'], ['build-css'], ['build-js'], ['build-img']
 ));
 
-//开发环境构建
-gulp.task('default', ['bs'], function() {
-    del(['tmp/']);
-});
+//监听less编译
+gulp.task('watch', function() {
+    gulp.watch(`${baseConfig.srcPath}/less/*.less`, function() {
+        multiProcess(['less'], function() {});
+    })
+})
+

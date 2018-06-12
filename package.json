@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "browser-sync": "^2.18.13",
+    "cross-env": "^5.1.6",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^5.0.0",
@@ -15,12 +16,31 @@
     "gulp-sequence": "^0.4.6",
     "gulp-uglify": "^3.0.0",
     "gulp-uncss": "^1.0.6",
-    "gulp-useref": "^3.1.2"
+    "gulp-useref": "^3.1.2",
+    "nodemon": "^1.17.5"
   },
   "dependencies": {
     "ejs": "^2.6.1",
     "express": "^4.16.3",
     "express-ejs-layouts": "^2.4.0",
     "gulp-less": "^3.5.0"
-  }
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=local nodemon server.js",
+    "production": "cross-env NODE_ENV=production node server.js"
+  },
+  "name": "gulp-demo",
+  "version": "1.0.0",
+  "main": "gulpfile.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caesar-cat/gulp-demo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/caesar-cat/gulp-demo/issues"
+  },
+  "homepage": "https://github.com/caesar-cat/gulp-demo#readme",
+  "description": ""
 }
