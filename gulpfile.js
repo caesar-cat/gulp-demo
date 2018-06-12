@@ -19,7 +19,8 @@ const baseConfig = {
     buildPath: './public/dist',
     srcPath: './public/src',
     tmpPath: './tmp',
-    viewsPath: './views_production'
+    viewsPathProduction: './views_production',
+    viewsPathLocal: './views_local'
 }
 
 //删除任务
@@ -78,7 +79,7 @@ gulp.task('rev-css', function() {
     return gulp.src(`${baseConfig.tmpPath}/useref/css/*.css`)
         .pipe(rev())
         .pipe(uncss({
-            html: [`${baseConfig.viewsPath}/*.html`],
+            html: [`${baseConfig.viewsPathProduction}/*.html`],
         })).pipe(cssmin({compatibility: 'ie8'}))
         .pipe(gulp.dest(`${baseConfig.tmpPath}/rev/css/`))
         .pipe(rev.manifest())
@@ -112,18 +113,18 @@ gulp.task('build-img', function() {
 })
 
 gulp.task('rev-collector-html', function() {
-    return gulp.src([`${baseConfig.tmpPath}/rev/**/*.json`, `${baseConfig.viewsPath}/*.html`])
+    return gulp.src([`${baseConfig.tmpPath}/rev/**/*.json`, `${baseConfig.viewsPathLocal}/*.html`])
         .pipe(revCollector({
             replaceReved: true,
             dirReplacements: {
-                '/css': '/dist/css',
-                '/js': '/dist/js',
+                '/src/css': '/dist/css',
+                '/src/js': '/dist/js',
             }
         }))
         .pipe(htmlmin({
             removeComments: true
         }))
-        .pipe(gulp.dest(baseConfig.viewsPath));
+        .pipe(gulp.dest(baseConfig.viewsPathProduction));
 });
 //分析resource-map, 分配资源到HTML end
 
