@@ -65,5 +65,5 @@
 
 ```bash
  gulp build
- npm run build
+ npm run production
 ```
