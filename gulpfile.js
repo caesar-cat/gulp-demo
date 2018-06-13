@@ -113,8 +113,13 @@ gulp.task('build-img', function() {
         .pipe(gulp.dest(`${baseConfig.buildPath}/img/`))
 })
 
+gulp.task('build-view', function() {
+    return gulp.src([`${baseConfig.viewsPathLocal}/*.html`])
+        .pipe(gulp.dest(baseConfig.viewsPathProduction))
+})
+
 gulp.task('rev-collector-html', function() {
-    return gulp.src([`${baseConfig.tmpPath}/rev/**/*.json`, `${baseConfig.viewsPathLocal}/*.html`])
+    return gulp.src([`${baseConfig.tmpPath}/rev/**/*.json`, `${baseConfig.viewsPathProduction}/*.html`])
         .pipe(revCollector({
             replaceReved: true,
             dirReplacements: {
@@ -146,7 +151,7 @@ gulp.task('bs', function() {
 //生产构建
 gulp.task('build', gulpSequence(
     'del', ['useref', 'useref-img'],
-    'less', 'min-css', 'sprite', ['rev-js', 'rev-css'], ['rev-collector-html'], ['build-css'], ['build-js'], ['build-img']
+    'less', 'min-css', 'sprite', 'build-view', ['rev-js', 'rev-css'], ['rev-collector-html'], ['build-css'], ['build-js'], ['build-img']
 ));
 
 //监听less编译

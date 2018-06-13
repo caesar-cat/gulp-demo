@@ -64,5 +64,6 @@
 ### 上线打包部署
 
 ```bash
+ gulp build
  npm run build
 ```
