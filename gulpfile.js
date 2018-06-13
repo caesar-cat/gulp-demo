@@ -25,7 +25,7 @@ const baseConfig = {
 
 //删除任务
 gulp.task('del', function() {
-    return del([`${baseConfig.buildPath}/css`, `${baseConfig.buildPath}/js`, `${baseConfig.buildPath}/img`, 'tmp']);
+    return del([baseConfig.buildPath, 'tmp']);
 });
 
 //处理html模板中的引用文件
@@ -62,21 +62,22 @@ gulp.task('min-css', function() {
 
 //生成雪碧图
 gulp.task('sprite', function() {
-    return gulp.src(`${baseConfig.srcPath}/css/*.css`)
+    return gulp.src(`${baseConfig.srcPath}/css/**/*.css`)
         .pipe(spriter({
-            'spriteSheet': `${baseConfig.srcPath}/img/spritesheet.png`,
-            'pathToSpriteSheetFromCSS': '../img/spritesheet.png',
+            'spriteSheet': `${baseConfig.srcPath}/img/common/spritesheet.png`,
+            'pathToSpriteSheetFromCSS': '../img/common/spritesheet.png',
             matchReg:{
                 pattern:"\.\.\/img\/icons\/"
             }
         }))
+        .pipe(gulp.dest(`${baseConfig.srcPath}/css/`))
         .pipe(gulp.dest(`${baseConfig.tmpPath}/useref/css/`));
 });
 
 
 //css加版本号
 gulp.task('rev-css', function() {
-    return gulp.src(`${baseConfig.tmpPath}/useref/css/*.css`)
+    return gulp.src(`${baseConfig.tmpPath}/useref/css/**/*.css`)
         .pipe(rev())
         .pipe(uncss({
             html: [`${baseConfig.viewsPathProduction}/*.html`],
@@ -98,7 +99,7 @@ gulp.task('rev-js', function() {
 
 //分析resource-map, 分配资源到HTML start
 gulp.task('build-css', function() {
-    return gulp.src([`${baseConfig.tmpPath}/rev/css/*.css`])
+    return gulp.src([`${baseConfig.tmpPath}/rev/css/**/*.css`])
         .pipe(gulp.dest(`${baseConfig.buildPath}/css/`));
 });
 
@@ -131,13 +132,13 @@ gulp.task('rev-collector-html', function() {
 
 // 静态服务器
 gulp.task('bs', function() {
-    gulp.watch(`${baseConfig.srcPath}/less/*.less`, function() {
+    gulp.watch(`${baseConfig.srcPath}/less/**/*.less`, function() {
         multiProcess(['less'], function() {});
     })
     browserSync.init({
         files: "**", //监听整个项目
         server: {
-            baseDir: "./"
+            baseDir: "./public/src"
         } 
     })
 });
