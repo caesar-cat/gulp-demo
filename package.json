@@ -27,7 +27,8 @@
   },
   "scripts": {
     "start": "cross-env NODE_ENV=local nodemon server.js",
-    "production": "cross-env NODE_ENV=production node server.js"
+    "production": "cross-env NODE_ENV=production node  server.js", 
+    "debug": "cross-env NODE_ENV=local node --inspect server.js"
   },
   "name": "gulp-demo",
   "version": "1.0.0",
